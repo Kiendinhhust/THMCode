@@ -2,7 +2,7 @@
 import argparse
 import base64
 import requests
-from typing import List
+from typing import List, Optional, Dict
 
 def build_basic_token(username: str, password: str) -> str:
     # Basic <base64(username:password)>
@@ -10,9 +10,13 @@ def build_basic_token(username: str, password: str) -> str:
     b64 = base64.b64encode(raw).decode("ascii")
     return f"Basic {b64}"
 
-def try_wordlist(url: str, wordlist_path: str, username: str = "test",
-                 user_headers: dict | None = None,
-                 ok_status: List[int] = [200]) -> None:
+def try_wordlist(
+    url: str,
+    wordlist_path: str,
+    username: str = "test",
+    user_headers: Optional[Dict[str, str]] = None,
+    ok_status: List[int] = [200],
+) -> None:
     sess = requests.Session()
     base_headers = {
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) requests/2.x",
@@ -51,10 +55,10 @@ def try_wordlist(url: str, wordlist_path: str, username: str = "test",
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="Send GET with Basic Auth from wordlist")
-    ap.add_argument("url", help="Đích, ví dụ: http://enum.thm/labs/basic_auth/")
-    ap.add_argument("wordlist", help="File chứa từng giá trị (ví dụ: password) mỗi dòng")
-    ap.add_argument("--username", default="test", help="Prefix username (mặc định: test)")
-    ap.add_argument("--ok", default="200", help="Mã HTTP coi là hợp lệ, ví dụ: 200,204")
+    ap.add_argument("url", help="Ví dụ: http://enum.thm/labs/basic_auth/")
+    ap.add_argument("wordlist", help="File mỗi dòng một giá trị ghép sau 'test:'")
+    ap.add_argument("--username", default="test", help="Tiền tố username (mặc định: test)")
+    ap.add_argument("--ok", default="200", help="HTTP code coi là hợp lệ, ví dụ: 200,204")
     args = ap.parse_args()
 
     ok_codes = [int(x) for x in args.ok.split(",") if x.strip().isdigit()]
